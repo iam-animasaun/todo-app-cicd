@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-backend
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+        - name: todo-backend
+          image: 192.168.20.90/todo-backend:12
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: todo-backend-config
+          env:
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-db-config
+                  key: POSTGRES_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: todo-db-credentials
+                  key: password
+          ports:
+            - name: http
+              containerPort: 4001   # must match PORT in todo-backend-config
+          readinessProbe:
+            httpGet:
+              path: /healthz        # answers 200 only when the database is reachable
+              port: http

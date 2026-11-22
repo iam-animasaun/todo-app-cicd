@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: todo-app-cache
+      containers:
+        - name: todo-app
+          image: 192.168.20.90/todo-app:12
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: todo-app-config
+          ports:
+            - name: http
+              containerPort: 4000
+          volumeMounts:
+            - name: cache
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
