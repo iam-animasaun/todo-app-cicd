@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: project
+resources:
+  - frontend/00-configmaps.yaml
+  - frontend/deployment.yaml
+  - frontend/ingress.yaml
+  - frontend/pvc.yaml
+  - frontend/service.yaml
+  - backend/manifests/deployment.yaml
+  - backend/manifests/pg-stateful.yaml
+  - backend/manifests/service.yaml
+  # ...every file in manifests/
+images:
+  - name: 192.168.20.90:5000/todo-app
+    newTag: latest
+  - name: 192.168.20.90:5000/todo-backend
+    newTag: latest
