@@ -8,16 +8,26 @@ pipeline {
     stages {
         stage('Build image') {
             steps {
-                sh 'docker build -f app/Dockerfile -t $REGISTRY/$IMAGE1:$BUILD_NUMBER -t $REGISTRY/$IMAGE1:latest app/'
-                sh 'docker build -f app/backend/Dockerfile -t $REGISTRY/$IMAGE2:$BUILD_NUMBER -t $REGISTRY/$IMAGE2:latest app/backend/'
+                sh 'docker build -f app/Dockerfile -t $REGISTRY/$IMAGE1:$BUILD_NUMBER app/'
+                sh 'docker build -f backend/Dockerfile -t $REGISTRY/$IMAGE2:$BUILD_NUMBER backend/'
             }
         }
         stage('Push image') {
             steps {
                 sh 'docker push $REGISTRY/$IMAGE1:$BUILD_NUMBER'
-                sh 'docker push $REGISTRY/$IMAGE1:latest'
                 sh 'docker push $REGISTRY/$IMAGE2:$BUILD_NUMBER'
-                sh 'docker push $REGISTRY/$IMAGE2:latest'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                withCredentials([file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh '''
+                      sed -i "s|newTag:.*|newTag: \\"$BUILD_NUMBER\\"|" deployments/kustomization.yaml
+                      kubectl --request-timeout=60s apply -k deployments/
+                      kubectl -n project rollout status deployment/todo-app --timeout=180s
+                      kubectl -n project rollout status deployment/todo-backend --timeout=180s
+                    '''
+                }
             }
         }
     }
