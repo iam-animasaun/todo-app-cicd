@@ -6,6 +6,16 @@ pipeline {
         IMAGE2    = 'todo-backend'
     }
     stages {
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+                    withSonarQubeEnv('sonarcloud') {
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.host.url=\$SONAR_HOST_URL -Dsonar.token=\$SONAR_AUTH_TOKEN"
+                    }
+                }
+            }
+        }
         stage('Build image') {
             steps {
                 sh 'docker build -f app/Dockerfile -t $REGISTRY/$IMAGE1:$BUILD_NUMBER app/'
