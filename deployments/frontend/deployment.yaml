@@ -19,7 +19,7 @@ spec:
             claimName: todo-app-cache
       containers:
         - name: todo-app
-          image: 192.168.20.90/todo-app:12
+          image: 192.168.20.90:5000/todo-app:12
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
