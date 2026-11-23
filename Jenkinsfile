@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                withCredentials([file(credentialsId: 'k3d-kubeconfig', variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: 'k3d-k3s', variable: 'KUBECONFIG')]) {
                     sh '''
                       sed -i "s|newTag:.*|newTag: \\"$BUILD_NUMBER\\"|" deployments/kustomization.yaml
                       kubectl --request-timeout=60s apply -k deployments/
