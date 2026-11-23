@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-backend
-          image: 192.168.20.90/todo-backend:12
+          image: 192.168.20.90:5000/todo-backend:12
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
