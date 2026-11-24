@@ -1,4 +1,7 @@
+
 # Homelab CI/CD Platform on Proxmox
+
+**Refrence:** `https://github.com/lloyd-theophilus/DevOps-Projects/tree/master/DevOps-Project-06`
 
 Terraform → Ansible → Jenkins → SonarQube Cloud → private registry → k3d (Kubernetes) → Prometheus/Grafana
 
